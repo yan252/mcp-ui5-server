@@ -86,7 +86,7 @@ The minimum version for ${framework} is ${minFwkVersionToUse}.`
 		if (oDataV4Url.startsWith("/")) {
 			metadataUrl = `http://localhost:4004${oDataV4Url}`;
 		}
-		const allowedDomains = getAllowedOdataV4Domains();
+		const allowedDomains = getAllowedDomains();
 		if (!isValidUrl(metadataUrl, allowedDomains)) {
 			let allowedDomainsNote = "";
 			if (allowedDomains.length) {
@@ -299,12 +299,13 @@ The minimum version for ${framework} is ${minFwkVersionToUse}.`
 	};
 }
 
-function getAllowedOdataV4Domains() {
-	if ("UI5_MCP_SERVER_ALLOWED_ODATA_DOMAINS" in process.env) {
-		const inputDomainList = process.env.UI5_MCP_SERVER_ALLOWED_ODATA_DOMAINS;
+function getAllowedDomains() {
+	if ("UI5_MCP_SERVER_ALLOWED_DOMAINS" in process.env || "UI5_MCP_SERVER_ALLOWED_ODATA_DOMAINS" in process.env) {
+		const inputDomainList = process.env.UI5_MCP_SERVER_ALLOWED_DOMAINS ??
+			process.env.UI5_MCP_SERVER_ALLOWED_ODATA_DOMAINS;
 		if (!inputDomainList?.trim()) {
 			// Empty list allows all domains
-			log.verbose("Empty value for UI5_MCP_SERVER_ALLOWED_ODATA_DOMAINS, allowing all domains");
+			log.verbose("Empty value for UI5_MCP_SERVER_ALLOWED_DOMAINS, allowing all domains");
 			return [];
 		}
 		// Use the environment variable if set
@@ -316,7 +317,7 @@ function getAllowedOdataV4Domains() {
 				new URL(`https://${domain}`);
 			} catch (err) {
 				throw new InvalidInputError(
-					`Invalid domain '${domain}' in UI5_MCP_SERVER_ALLOWED_ODATA_DOMAINS: ` +
+					`Invalid domain '${domain}' in UI5_MCP_SERVER_ALLOWED_DOMAINS: ` +
 					(err instanceof Error ? err.message : String(err))
 				);
 			}

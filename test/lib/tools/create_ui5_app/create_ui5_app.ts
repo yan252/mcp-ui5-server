@@ -411,7 +411,7 @@ test("OData V4 Service URL: Not in allow list", async (t) => {
 test.serial("OData V4 Service URL: Custom allow list", async (t) => {
 	const {createUi5App, mkdirStub, execaStub, staticParams} = t.context;
 
-	process.env.UI5_MCP_SERVER_ALLOWED_ODATA_DOMAINS = "  .example.com, ui5.sap.com  ";
+	process.env.UI5_MCP_SERVER_ALLOWED_DOMAINS = "  .example.com, ui5.sap.com  ";
 
 	await t.throwsAsync(async () => {
 		return await createUi5App({
@@ -440,10 +440,45 @@ test.serial("OData V4 Service URL: Custom allow list", async (t) => {
 	});
 });
 
+test.serial(
+	"OData V4 Service URL: Custom allow list using deprecated UI5_MCP_SERVER_ALLOWED_ODATA_DOMAINS",
+	async (t) => {
+		const {createUi5App, mkdirStub, execaStub, staticParams} = t.context;
+
+		delete process.env.UI5_MCP_SERVER_ALLOWED_DOMAINS;
+		process.env.UI5_MCP_SERVER_ALLOWED_ODATA_DOMAINS = "  .example.com, ui5.sap.com  ";
+
+		await t.throwsAsync(async () => {
+			return await createUi5App({
+				...staticParams,
+				oDataV4Url: "https://localhost/odata/v4/service",
+			});
+		}, {
+			message: /Domain "localhost" is not allowed/,
+			instanceOf: InvalidInputError,
+		});
+		t.true(mkdirStub.notCalled);
+		t.true(execaStub.notCalled);
+
+		await t.notThrowsAsync(async () => {
+			await createUi5App({
+				...staticParams,
+				oDataV4Url: "https://www.example.com/odata/v4/service",
+			});
+		});
+
+		await t.notThrowsAsync(async () => {
+			await createUi5App({
+				...staticParams,
+				oDataV4Url: "https://ui5.sap.com/odata/v4/service",
+			});
+		});
+	});
+
 test.serial("OData V4 Service URL: Invalid entry in allow list", async (t) => {
 	const {createUi5App, mkdirStub, execaStub, staticParams} = t.context;
 
-	process.env.UI5_MCP_SERVER_ALLOWED_ODATA_DOMAINS = "ex ample.com, ui5/.sap.com  ";
+	process.env.UI5_MCP_SERVER_ALLOWED_DOMAINS = "ex ample.com, ui5/.sap.com  ";
 
 	await t.throwsAsync(async () => {
 		return await createUi5App({
@@ -451,7 +486,7 @@ test.serial("OData V4 Service URL: Invalid entry in allow list", async (t) => {
 			oDataV4Url: "https://localhost/odata/v4/service",
 		});
 	}, {
-		message: /Invalid domain 'ex ample.com' in UI5_MCP_SERVER_ALLOWED_ODATA_DOMAINS: Invalid URL/,
+		message: /Invalid domain 'ex ample.com' in UI5_MCP_SERVER_ALLOWED_DOMAINS: Invalid URL/,
 		instanceOf: InvalidInputError,
 	});
 	t.true(mkdirStub.notCalled);
