@@ -39,6 +39,9 @@
 ### 1.3 Analytical Cards
 - **ALWAYS** follow [6. Analytical Cards Coding Guidelines](#6-analytical-cards-coding-guidelines) when developing Analytical cards.
 
+### 1.4 Configuration Editor
+- **ALWAYS** follow [5. Configuration Editor](#5-configuration-editor) guidelines when creating or modifying Configuration Editors for Integration Cards.
+
 ## 2. Validation
 - **ALWAYS** ensure that `manifest.json` file is valid JSON.
 - **ALWAYS** ensure that in `manifest.json` file the property `sap.app/type` is set to `"card"`.
@@ -50,13 +53,268 @@
 - The Card Explorer provides detailed documentation for the Integration Cards schema, including descriptions of every property, guidance for integrating cards into hosting environments, configuration editor documentation with examples, and broader best practices. It is available at: https://ui5.sap.com/test-resources/sap/ui/integration/demokit/cardExplorer/webapp/index.html
 
 ## 4. Preview Instructions
-- **ALWAYS** check the card folder for an existing preview file and any accompanying instructions or scripts, and reuse them if available.
+- If preview of the card must be shown, **ALWAYS** check the card folder for an existing preview file and any accompanying instructions or scripts, and reuse them if available.
   * for example, in NodeJS-based projects, search the `package.json` file for `start` or similar script. If such is available, use it
   * also search in the `README.md` file.
 - If preview instructions are not available, you have to create an HTML page that contains a `ui-integration` card element which references the card manifest. Then serve the HTML page using `http` server.
 
 ## 5. Configuration Editor
-- When a Configuration Editor is available, make as many Integration Card fields editable as possible.
+Configuration Editor allows different personas to customize Integration Cards without modifying the manifest file directly.
+The following roles/personas are supported:
+- Administrator
+- Page/Content Administrator
+- Translator
+
+The Configuration Editor is implemented through two key components:
+
+1. **Definition file**: Create a `dt/Configuration.js` file that exports a Designtime definition object
+2. **Manifest reference**: Reference this definition in the `manifest.json` under the `sap.card/configuration/editor` property
+
+The `dt/Configuration.js` file defines the Configuration Editor's structure by specifying:
+- Form layout and field definitions
+- Input controls and visualizations 
+- Validation rules and field relationships
+- Grouping and organization of configuration options
+
+When creating or modifying Integration Cards, follow these guidelines for Configuration Editors:
+- Assume the role of Administrator persona when designing the Configuration Editor.
+- **ALWAYS** ensure that the Configuration Editor reflects the current structure and fields of the `manifest.json`.
+- **ALWAYS** make the existing fields in the `manifest.json` configurable via the editor. For example manifest parameters, title, subtitle, icon of the header, etc.
+- **NEVER** add fields to the editor that do not exist in the `manifest.json`.
+- **ALWAYS** remove fields from the editor when removing them from the `manifest.json`.
+- **ALWAYS** add fields in the Configuration Editor when adding them to the `manifest.json`.
+
+### 5.1 Example:
+`manifest.json` file:
+```json
+{
+  "sap.app": {
+    "id": "test.editor",
+    "type": "card",
+    "title": "Test Card",
+    "applicationVersion": {
+      "version": "1.0.0"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5"
+  },
+  "sap.card": {
+    "type": "List",
+    "configuration": {
+      "editor": "./dt/Configuration",
+      "parameters": {
+        "cardTitle": {
+          "value": "Customers"
+        },
+        "icon": {
+          "value": "sap-icon://account"
+        },
+        "maxItems": {
+          "value": 3
+        },
+        "showDescription": {
+          "value": true
+        },
+        "dateContext": {
+          "value": "2020-09-02"
+        },
+        "Customers": {
+          "value": ["ALFKI"]
+        },
+        "northwindDestination": {
+          "value": "northwind"
+        }
+      },
+      "destinations": {
+        "northwind": {
+          "name": "Northwind_V4",
+          "defaultUrl": "https://services.odata.org/V4/Northwind/Northwind.svc"
+        }
+      }
+    },
+    "data": {
+        "request": {
+          "url": "{{destinations.northwind}}/Customers",
+          "parameters": {
+            "$select": "CustomerID,CompanyName,ContactName",
+            "$top": "{parameters>/maxItems/value}"
+          }
+        }
+      },
+    "header": {
+      "title": "{parameters>/cardTitle/value}",
+      "subtitle": "As of {parameters>/dateContext/value}",
+      "icon": {
+        "src": "{parameters>/icon/value}",
+        "shape": "Circle"
+      }
+    },
+    "content": {
+      "data": {
+        "path": "/value"
+      },
+      "item": {
+        "title": "{CompanyName}",
+        "description": "{= ${parameters>/showDescription/value} ? ${ContactName} : '' }"
+      },
+      "maxItems": "{parameters>/maxItems/value}"
+    }
+  }
+}
+```
+
+`dt/Configuration.js` file:
+```javascript
+sap.ui.define(["sap/ui/integration/Designtime"], function (Designtime) {
+	"use strict";
+
+	return function () {
+		return new Designtime({
+			form: {
+				items: {
+
+					/* =======================
+					   General
+					======================= */
+					generalGroup: {
+						type: "group",
+						label: "General"
+					},
+
+					cardTitle: {
+						manifestpath: "/sap.card/configuration/parameters/cardTitle/value",
+						type: "string",
+						label: "Card Title",
+						translatable: true,
+						required: true,
+						allowDynamicValues: true
+					},
+
+					icon: {
+						manifestpath: "/sap.card/header/icon/src",
+						type: "string",
+						label: "Icon",
+						visualization: {
+							type: "IconSelect",
+							settings: {
+								value: "{currentSettings>value}",
+								editable: "{currentSettings>editable}"
+							}
+						}
+					},
+
+					iconShape: {
+						manifestpath: "/sap.card/header/icon/shape",
+						type: "string",
+						label: "Icon Shape",
+						visualization: {
+							type: "ShapeSelect",
+							settings: {
+								value: "{currentSettings>value}",
+								editable: "{currentSettings>editable}"
+							}
+						},
+						cols: 1
+					},
+
+					iconBackground: {
+						manifestpath: "/sap.card/header/icon/backgroundColor",
+						type: "string",
+						label: "Icon Background",
+						visualization: {
+							type: "ColorSelect",
+							settings: {
+								enumValue: "{currentSettings>value}",
+								editable: "{currentSettings>editable}"
+							}
+						},
+						cols: 1
+					},
+
+					/* =======================
+					   Data & Behavior
+					======================= */
+					dataGroup: {
+						type: "group",
+						label: "Data & Behavior"
+					},
+
+					maxItems: {
+						manifestpath: "/sap.card/configuration/parameters/maxItems/value",
+						type: "integer",
+						label: "Maximum Items",
+						visualization: {
+							type: "Slider",
+							settings: {
+								value: "{currentSettings>value}",
+								min: 1,
+								max: 10,
+								width: "100%",
+								enabled: "{currentSettings>editable}"
+							}
+						}
+					},
+
+					showDescription: {
+						manifestpath: "/sap.card/configuration/parameters/showDescription/value",
+						type: "boolean",
+						label: "Show Contact Name",
+						visualization: {
+							type: "Switch",
+							settings: {
+								state: "{currentSettings>value}",
+								customTextOn: "Show",
+								customTextOff: "Hide",
+								enabled: "{currentSettings>editable}"
+							}
+						}
+					},
+
+					dateContext: {
+						manifestpath: "/sap.card/configuration/parameters/dateContext/value",
+						type: "date",
+						label: "Date Context"
+					},
+
+					/* =======================
+					   Filtering
+					======================= */
+					filterGroup: {
+						type: "group",
+						label: "Customer Filter"
+					},
+
+					CustomerID: {
+						manifestpath: "/sap.card/configuration/parameters/CustomerID/value",
+						type: "string",
+						label: "Customer ID",
+						values: {
+							data: {
+								request: {
+									url: "{{destinations.northwind}}/Customers",
+									parameters: {
+										"$select": "CustomerID,CompanyName"
+									}
+								},
+								path: "/value"
+							},
+							item: {
+								key: "{CustomerID}",
+								text: "{CompanyName}"
+							}
+						}
+					}
+				}
+			},
+			preview: {
+				modes: "None"
+			}
+		});
+	};
+});
+
+```
 
 ## 6. Analytical Cards Coding Guidelines
 - **ALWAYS** set `sap.card/content/chartType` property.

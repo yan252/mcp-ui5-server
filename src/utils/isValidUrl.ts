@@ -1,4 +1,4 @@
-import {InvalidInputError} from "../../utils.js";
+import {InvalidInputError} from "../utils.js";
 
 /**
  * Validates a URL against a set of specified rules, including protocol and domain allow lists.

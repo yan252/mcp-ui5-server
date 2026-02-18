@@ -3,6 +3,8 @@ import esmock from "esmock";
 import sinonGlobal from "sinon";
 import {InvalidInputError} from "../../../../src/utils.js";
 import path from "node:path";
+import getAllowedDomains from "../../../../src/utils/getAllowedDomains.js";
+import realIsValidUrl from "../../../../src/utils/isValidUrl.js";
 
 // Define test context type
 const test = anyTest as TestFn<{
@@ -23,6 +25,7 @@ const test = anyTest as TestFn<{
 		isLevelEnabled: sinonGlobal.SinonStub;
 	};
 	globbyStub: sinonGlobal.SinonStub;
+	isValidUrlStub: sinonGlobal.SinonStub;
 	createIntegrationCard: typeof import(
 		"../../../../src/tools/create_integration_card/create_integration_card.js"
 	).createIntegrationCard;
@@ -66,6 +69,9 @@ test.beforeEach(async (t) => {
 	];
 	t.context.globbyStub = t.context.sinon.stub().resolves(t.context.staticFiles);
 
+	// Create a stub that wraps the real isValidUrl function
+	t.context.isValidUrlStub = t.context.sinon.stub().callsFake(realIsValidUrl);
+
 	const {createIntegrationCard} = await esmock(
 		"../../../../src/tools/create_integration_card/create_integration_card.js", {
 			"@ui5/logger": {
@@ -85,6 +91,12 @@ test.beforeEach(async (t) => {
 			},
 			"../../../../src/utils.js": {
 				dirExists: t.context.dirExistsStub,
+			},
+			"../../../../src/utils/isValidUrl.js": {
+				default: t.context.isValidUrlStub,
+			},
+			"../../../../src/utils/getAllowedDomains.js": {
+				default: getAllowedDomains,
 			},
 		}
 	);
@@ -110,6 +122,7 @@ test("createIntegrationCard executes successfully", async (t) => {
 		folderPath,
 		cardType: "List",
 		manifestVersion: "1.78.0",
+		destinations: undefined,
 	});
 
 	t.is(mkdirStub.callCount, 4);
@@ -134,6 +147,7 @@ test("createIntegrationCard executes successfully", async (t) => {
 		t.deepEqual(templateVars, {
 			cardType: "List",
 			manifestVersion: "1.78.0",
+			destinations: undefined,
 		});
 	});
 
@@ -221,4 +235,67 @@ test("Error processing template file", async (t) => {
 		message: `Failed to process template file 'card/manifest.json': ${errorMessage}`,
 		instanceOf: Error,
 	});
+});
+
+test.serial("Destinations: Throws error when there is not allowed domain", async (t) => {
+	const {createIntegrationCard, mkdirStub} = t.context;
+	const folderPath = "/some/folder/path/card";
+	const destinations = [
+		{
+			name: "invalidDomain",
+			defaultUrl: "https://invalid-domain.com/api/v1/",
+		},
+	];
+	const allowedDomains = ["allowed-domain.com"];
+
+	process.env.UI5_MCP_SERVER_ALLOWED_DOMAINS = "allowed-domain.com";
+
+	await t.throwsAsync(async () => {
+		await createIntegrationCard({
+			folderPath,
+			cardType: "List",
+			manifestVersion: "1.78.0",
+			destinations,
+		});
+	}, {
+		message: `Domain "invalid-domain.com" is not allowed. Allowed domains are: ${allowedDomains.join(", ")}. See ` +
+			`https://github.com/UI5/mcp-server#configuration for information on how to configure the allow list.`,
+		instanceOf: InvalidInputError,
+	});
+
+	t.true(mkdirStub.notCalled);
+	t.true(t.context.isValidUrlStub.calledOnce, "isValidUrl should be called once");
+	t.deepEqual(
+		t.context.isValidUrlStub.firstCall.args,
+		[destinations[0].defaultUrl, allowedDomains],
+		"isValidUrl should be called with the destination URL and allowed domains"
+	);
+});
+
+test.serial("Destinations: Successfully generates card template with allowed destination domain", async (t) => {
+	const {createIntegrationCard} = t.context;
+	const folderPath = "/some/folder/path/card";
+	const destinations = [
+		{
+			name: "validDomain",
+			defaultUrl: "https://allowed-domain.com/api/v1/",
+		},
+	];
+	process.env.UI5_MCP_SERVER_ALLOWED_DOMAINS = "allowed-domain.com";
+
+	await t.notThrowsAsync(async () => {
+		await createIntegrationCard({
+			folderPath,
+			cardType: "List",
+			manifestVersion: "1.78.0",
+			destinations,
+		});
+	});
+
+	t.true(t.context.isValidUrlStub.calledOnce, "isValidUrl should be called once");
+	t.deepEqual(
+		t.context.isValidUrlStub.firstCall.args,
+		[destinations[0].defaultUrl, ["allowed-domain.com"]],
+		"isValidUrl should be called with the destination URL and allowed domains"
+	);
 });

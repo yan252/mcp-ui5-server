@@ -5,8 +5,10 @@ import path, {isAbsolute} from "path";
 import {fileURLToPath} from "url";
 import ejs from "ejs";
 import {getLogger} from "@ui5/logger";
-import {SupportedCardType} from "./schema.js";
+import {Destination, SupportedCardType} from "./schema.js";
 import semver from "semver";
+import getAllowedDomains from "../../utils/getAllowedDomains.js";
+import isValidUrl from "../../utils/isValidUrl.js";
 
 const log = getLogger("tools:create_integration_card:create_integration_card");
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -15,9 +17,15 @@ interface CreateIntegrationCardParams {
 	folderPath: string;
 	cardType: SupportedCardType;
 	manifestVersion: string;
+	destinations?: Destination[];
 };
 
-export async function createIntegrationCard({folderPath, cardType, manifestVersion}: CreateIntegrationCardParams) {
+export async function createIntegrationCard({
+	folderPath,
+	cardType,
+	manifestVersion,
+	destinations,
+}: CreateIntegrationCardParams) {
 	if (!isAbsolute(folderPath)) {
 		throw new InvalidInputError(
 			"The provided folder path is not valid! Please provide an absolute path to the target directory."
@@ -33,6 +41,30 @@ export async function createIntegrationCard({folderPath, cardType, manifestVersi
 
 	if (!semver.valid(manifestVersion)) {
 		throw new InvalidInputError("The provided manifest version is not valid!");
+	}
+
+	if (destinations?.length) {
+		const allowedDomains = getAllowedDomains();
+
+		for (const destination of destinations) {
+			if (!isValidUrl(destination.defaultUrl, allowedDomains)) {
+				let allowedDomainsNote = "";
+				if (allowedDomains.length) {
+					allowedDomainsNote =
+						`As per the MCP server configuration, only the following domains are currently allowed: ` +
+						`'${allowedDomains.join("', '")}'. See https://github.com/UI5/mcp-server#configuration ` +
+						`for information on how to configure the allow list.`;
+				}
+				throw new InvalidInputError(
+					`The provided destination 'defaultUrl' service URL is not valid.` +
+					`It must be either an absolute URL` +
+					`starting with http:// or https:// or pathname like '/api/v1/serviceName' in case ` +
+					`the service is exposed on the same server as the application. In this case, ` +
+					`the protocol and host 'http://localhost:4004' will be assumed and used by this tool for inquiries ` +
+					`about the service. ${allowedDomainsNote}`
+				);
+			}
+		}
 	}
 
 	try {
@@ -72,6 +104,7 @@ export async function createIntegrationCard({folderPath, cardType, manifestVersi
 			const templateVars = {
 				cardType,
 				manifestVersion,
+				destinations,
 			};
 			let processedContent = ejs.render(templateContent, templateVars, {filename: sourcePath});
 
