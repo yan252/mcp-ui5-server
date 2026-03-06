@@ -103,15 +103,16 @@ test("getManifestSchema throws error for unsupported versions 1.x.x versions", a
 
 	await t.throwsAsync(
 		async () => {
-			await getManifestSchema("1.68.0");
+			await getManifestSchema("1.47.0");
 		},
 		{
-			message: "Manifest version '1.68.0' is not supported. Please upgrade to a newer one.",
+			message: "Manifest version '1.47.0' is not supported. Please upgrade to a newer one.",
 		}
 	);
 
 	fetchCdnStub.withArgs("https://raw.githubusercontent.com/UI5/manifest/main/mapping.json")
 		.resolves({
+			"1.30.0": "1.30.0",
 			"1.55.0": "1.55.0",
 			"1.67.0": "1.67.0",
 			"1.68.0": "1.68.0",
@@ -124,7 +125,7 @@ test("getManifestSchema throws error for unsupported versions 1.x.x versions", a
 		},
 		{
 			message: "Manifest version '1.45.0' is not supported. Please upgrade to a newer one." +
-				"\nSupported versions are: 1.69.0.",
+				"\nSupported versions are: 1.55.0, 1.67.0, 1.68.0, 1.69.0.",
 		}
 	);
 
