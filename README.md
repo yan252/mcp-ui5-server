@@ -1,170 +1,162 @@
 # UI5 MCP Server
 
-A [Model Context Protocol](https://modelcontextprotocol.io/) server for UI5 application development.
+## 项目说明
 
-[![OpenUI5 Community Slack (#tooling channel)](https://img.shields.io/badge/slack-join-44cc11.svg)](https://ui5-slack-invite.cfapps.eu10.hana.ondemand.com/)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.1%20adopted-ff69b4.svg)](https://github.com/UI5/mcp-server?tab=coc-ov-file#readme)
-[![REUSE status](https://api.reuse.software/badge/github.com/UI5/mcp-server)](https://api.reuse.software/info/github.com/UI5/mcp-server)
-[![npm Package Version](https://badge.fury.io/js/%40ui5%2Fmcp-server.svg)](https://www.npmjs.com/package/@ui5/mcp-server)
-[![Coverage Status](https://coveralls.io/repos/github/UI5/mcp-server/badge.svg)](https://coveralls.io/github/UI5/mcp-server)
+本项目是基于 [UI5/mcp-server](https://github.com/UI5/mcp-server) 的分支版本，旨在为 SAP UI5/OpenUI5 应用开发提供 MCP (Model Context Protocol) 支持。
 
-## Description
+原始项目地址：[https://github.com/UI5/mcp-server](https://github.com/UI5/mcp-server)
 
-The UI5 [Model Context Protocol](https://modelcontextprotocol.io/) server offers tools to improve the developer experience when working with agentic AI tools.
+## 其它SAP中AI的开发使用
+其它SAP中AI的开发使用可参考[AI的ABAP开发中的使用](https://www.ut163.com/the_use_of_ai_in_abap_development/)
 
-## Key Features
 
-- Helps with the creation of new UI5 projects when working with agentic AI tools
-- Supports the developer to detect and fix UI5-specific errors in the code
-- Provides additional UI5-specific information for agentic AI tools
+## 功能特性
 
-> [!TIP]
-> Make sure to also check out our [announcement blog post](https://community.sap.com/t5/technology-blog-posts-by-sap/give-your-ai-agent-some-tools-introducing-the-ui5-mcp-server/ba-p/14200825) in the SAP Community!
+- **创建 UI5 应用**：快速生成新的 UI5 项目
+- **API 参考文档**：获取 UI5 API 文档和示例
+- **开发规范指南**：提供 UI5 开发的最佳实践
+- **Manifest 验证**：验证 UI5 应用的 manifest.json 配置
+- **代码检查**：集成 UI5 Linter 进行代码分析和问题检测
+- **项目信息获取**：提取 UI5 项目的元数据和配置信息
+- **TypeScript 转换指南**：提供 JavaScript 到 TypeScript 的转换指导
 
-## Available Tools
+## 可用工具
 
-- `create_integration_card`: Scaffolds a new UI Integration Card.
-- `create_ui5_app`: Scaffolds a new UI5 application based on a set of templates.
-- `get_api_reference`: Fetches and formats UI5 API documentation.
-- `get_guidelines`: Provides access to UI5 development best practices.
-- `get_integration_cards_guidelines`: Provides access to UI Integration Cards development best practices.
-- `get_project_info`: Extracts metadata and configuration from a UI5 project.
-- `get_typescript_conversion_guidelines`: Provides guidelines for converting UI5 applications and controls from JavaScript to TypeScript.
-- `get_version_info`: Retrieves version information for the UI5 framework.
-- `run_manifest_validation`: Validates the manifest against the UI5 Manifest schema.
-- `run_ui5_linter`: Integrates with [`@ui5/linter`](https://github.com/UI5/linter) to analyze and report issues in the UI5 code.
+| 工具名称 | 功能描述 |
+|---------|---------|
+| `create_ui5_app` | 基于模板创建新的 UI5 应用 |
+| `create_integration_card` | 创建 UI Integration Card |
+| `get_api_reference` | 获取 UI5 API 文档 |
+| `get_guidelines` | 获取 UI5 开发规范 |
+| `get_project_info` | 获取项目信息 |
+| `run_ui5_linter` | 运行 UI5 Linter 检查代码 |
+| `run_manifest_validation` | 验证 manifest 配置 |
+| `get_version_info` | 获取 UI5 版本信息 |
 
-## Requirements
+## 系统要求
 
-- [Node.js](https://nodejs.org/) Version v20.17.0, v22.9.0 or higher
-- [npm](https://www.npmjs.com/) Version v8.0.0 or higher
-- An MCP client, such as VS Code (GitHub Copilot), Cline, Claude Code, Codex, or any other MCP-compatible client
+- **Node.js**：v20.17.0、v22.9.0 或更高版本
+- **npm**：v8.0.0 或更高版本
+- **MCP 客户端**：如 TRAE IDE、VS Code (GitHub Copilot)、Cline 等
 
-## Setup
+## 安装步骤
 
-### Standard Configuration for Most Clients
+### 第一步：从 GitHub 下载项目
 
-This configuration works for most MCP clients:
+访问原始项目地址下载：
+
+**原始项目（推荐）：**
+```
+https://github.com/UI5/mcp-server
+```
+
+**本分支版本：**
+```
+https://github.com/yan252/mcp-ui5-server
+```
+
+下载方式：
+1. 使用 Git 克隆：
+   ```bash
+   git clone https://github.com/yan252/mcp-ui5-server
+   ```
+2. 或直接下载 ZIP 压缩包
+
+### 第二步：安装依赖
+
+进入项目目录并安装依赖：
+
+```bash
+cd mcp-ui5-server
+npm install
+```
+
+### 第三步：构建项目
+
+```bash
+npm run build
+```
+
+## 在 TRAE IDE 中配置 MCP
+
+### 打开 TRAE MCP 配置
+
+1. 打开 TRAE IDE 设置
+2. 找到 **MCP Server** 配置选项
+3. 选择 **INSERT** → **BINDING** 或编辑配置文件
+
+### 配置示例
+
+下面是我的TRAE中配置配置文件，其它用户请根据实际目录修改其中的目录地址，确保路径正确，其它AI软件的使用配置可参考此及源项目配置：
 
 ```json
 {
-    "mcpServers": {
-        "@ui5/mcp-server": {
-            "type": "stdio",
-            "command": "npx",
-            "args": [
-                "-y",
-                "@ui5/mcp-server"
-            ]
-        }
+  "mcpServers": {
+    "ui5-mcp-server": {
+      "command": "C:\\Users\\96000217\\node-v22.11.0\\node-v22.11.0-win-x64\\node.exe",
+      "args": [
+        "C:\\Users\\96000217\\Documents\\trae_projects\\mcp-ui5-server\\bin\\ui5mcp.js"
+      ]
     }
+  }
 }
 ```
 
-<details>
-  <summary><i>Special configuration for native Windows</i></summary>
-On native Windows (not WSL), you might need to prefix npx with `cmd /c`:
+### 配置说明
 
-```json
-{
-    "mcpServers": {
-        "@ui5/mcp-server": {
-            "type": "stdio",
-            "command": "cmd",
-            "args": [
-                "/c",
-                "npx -y @ui5/mcp-server"
-            ]
-        }
-    }
-}
-```
-</details>
+- **`command`**：Node.js 可执行文件路径
+  - 示例：`C:\Users\96000217\node-v22.11.0\node-v22.11.0-win-x64\node.exe`
+  - 请根据您实际的 Node.js 安装路径进行调整，也可以通过命令行查看：`where node`，或者在此直接使用 `node.exe`
 
-### Specific MCP Clients
+- **`args`**：MCP 服务器入口文件路径
+  - 示例：`C:\Users\96000217\Documents\trae_projects\mcp-ui5-server\bin\ui5mcp.js`
+  - 请根据您实际的项目存放路径进行调整
 
-Besides the general configuration outlined above, some MCP clients offer shortcuts for installing MCP servers. Below are instructions for some popular clients, but you can also refer to your specific client's documentation for more details.
+### 路径调整指南
 
-#### VS Code
+如果您修改了项目存放位置，需要相应调整配置：
 
-**Preferred:** Install from the **[GitHub MCP server registry](https://github.com/mcp/UI5/mcp-server)**
+1. **Node.js 路径**：找到您系统上 Node.js 的安装位置
+   - Windows 上可通过命令行查看：`where node`
 
-_Alternatively you can use the VS Code CLI:_
+2. **ui5mcp.js 路径**：指向本项目 bin 目录下的 ui5mcp.js 文件
 
-```bash
-# Using VS Code CLI
-code --add-mcp '{"name":"@ui5/mcp-server","type": "stdio","command":"npx","args":["-y", "@ui5/mcp-server"]}'
-```
+## 快速验证
 
-#### Cline
+配置完成后，可以在 TRAE 中测试 MCP 服务器是否正常工作：
 
-1. Open the Cline panel in VSCode.
-2. Click on the "MCP Servers" icon at the top, next to the "plus" symbol
-3. Change to the "Configure" tab, then click "Configure MCP servers"
-4. In the editor that opens, insert the above [Standard Configuration for Most Clients](#standard-configuration-for-most-clients)
+1. 重启 TRAE IDE
+2. 尝试询问 MCP 服务器可用工具列表
+3. 尝试创建一个新的 UI5 应用
 
-See [docs.cline.bot/mcp/adding-and-configuring-servers](https://docs.cline.bot/mcp/adding-and-configuring-servers) for details.
+## 使用示例
 
-#### Claude Code
-
-```bash
-claude mcp add --transport stdio --scope user ui5-mcp-server -- npx -y @ui5/mcp-server
-```
-
-#### Codex
+### 创建 UI5 应用
 
 ```
-codex mcp add --transport stdio ui5-mcp-server -- npx -y @ui5/mcp-server
+appNamespace: com.myorg.myapp
+basePath: C:\Projects\my-app
+oDataV4Url: http://localhost:4004/odata/v4/service
+oDataEntitySet: Orders
+typescript: true
 ```
 
-## Adding Rules to your Project
+### 获取 UI5 指南
 
-The following rules **guide large language models (LLMs) in using the UI5 MCP server correctly**. Add these rules to your existing global or project-specific [`AGENTS.md`](https://agents.md/) file. The exact location may vary depending on the MCP client. For example, Claude Code uses a `CLAUDE.md` file instead of `AGENTS.md`.
-
-```markdown
-## Guidelines for UI5
-
-Use the `get_guidelines` tool of the UI5 MCP server to retrieve the latest coding standards and best practices for UI5 development.
+```
+使用 get_guidelines 工具获取最新的 UI5 开发规范和最佳实践
 ```
 
-### Configuration
+## 技术支持
 
-The UI5 MCP server can be configured using the following environment variables. It does not accept any command-line arguments.
+- **原始项目**：[UI5/mcp-server Issues](https://github.com/UI5/mcp-server/issues)
+- **本项目 Issues**：[yan252/mcp-ui5-server Issues](https://github.com/yan252/mcp-ui5-server/issues)
+- **社区讨论**：[SAP Community](https://community.sap.com/)
 
-**Configuration Options:**
+## 许可证
 
-* **`UI5_MCP_SERVER_ALLOWED_DOMAINS`**:
-    * Default Value: `localhost, services.odata.org`
-    * Description: A comma-separated list of domains that are allowed to be used in various tools, for example: `localhost, example.com, sub.example.com`. Set to an empty string to allow any domains.
-    For wildcard subdomains, prefix the domain with a dot: `.example.com`. This will match `www.example.com` but not `example.com`.
-* **`UI5_MCP_SERVER_RESPONSE_NO_STRUCTURED_CONTENT`**:
-    * Description: Set to any value to disable structured content in the MCP server responses.
-* **`UI5_MCP_SERVER_RESPONSE_NO_RESOURCES`**:
-    * Description: Set to any value to disable [resources](https://modelcontextprotocol.io/specification/2025-06-18/server/resources) in the MCP server responses. This is useful for [clients that do not support resources](https://modelcontextprotocol.io/clients), such as Cursor or the Gemini CLI.
-* **`UI5_MCP_SERVER_CDN_URL`**:
-    * Default Value: `https://sdk.openui5.org` for OpenUI5 and `https://ui5.sap.com` for SAPUI5
-    * Description: Override the base URL used for fetching UI5 resources from the CDN. For example: `https://example.com`. When set, this URL is used for both OpenUI5 and SAPUI5 resources. The value must be a valid URL. Note that the project's version will appended to the URL automatically. This means that at runtime, the URL might look like this: `https://example.com/1.120.0/resources/[...]`.
-* **`UI5_LOG_LVL`**:
-    * Default Value: `info`
-    * Description: Internal [log level](https://ui5.github.io/cli/stable/pages/Troubleshooting/#changing-the-log-level): `silent`, `error`, `warn`, `info`, `perf`, `verbose`, `silly`
-* **`UI5_DATA_DIR`**:
-    * Default Value: The `.ui5` directory in the user's home directory
-    * Description: Directory where the MCP server stores its data, such as cached API references.
+本项目遵循 Apache-2.0 许可证。详细许可证信息请参阅 [LICENSE](./LICENSE) 文件。
 
-## Support, Feedback, Contributing
+## 致谢
 
-This project is open to feature requests/suggestions, bug reports etc. via [GitHub issues](https://github.com/UI5/mcp-server/issues). Contribution and feedback are encouraged and always welcome. For more information about how to contribute, the project structure, as well as additional contribution information, see our [Contribution Guidelines](CONTRIBUTING.md).
-
-You can also chat with us in the [`#tooling`](https://openui5.slack.com/archives/C0A7QFN6B) channel of the [OpenUI5 Community Slack](https://ui5-slack-invite.cfapps.eu10.hana.ondemand.com/). For public Q&A, use the [`ui5-tooling` tag on Stack Overflow](https://stackoverflow.com/questions/tagged/ui5-tooling).
-
-## Security / Disclosure
-
-If you find any bug that may be a security problem, please follow our instructions at [in our security policy](https://github.com/UI5/mcp-server/security/policy) on how to report it. Please do not create GitHub issues for security-related doubts or problems.
-
-## Code of Conduct
-
-We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone. By participating in this project, you agree to abide by its [Code of Conduct](https://github.com/UI5/mcp-server?tab=coc-ov-file#readme) at all times.
-
-## Licensing
-
-Copyright 2026 SAP SE or an SAP affiliate company and UI5 MCP server contributors. Please see our [LICENSE](./LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/UI5/mcp-server).
+感谢 [SAP](https://www.sap.com) 和所有 [UI5/mcp-server](https://github.com/UI5/mcp-server) 的贡献者。
