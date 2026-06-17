@@ -152,6 +152,12 @@ typescript: true
 - **原始项目**：[UI5/mcp-server Issues](https://github.com/UI5/mcp-server/issues)
 - **本项目 Issues**：[yan252/mcp-ui5-server Issues](https://github.com/yan252/mcp-ui5-server/issues)
 - **社区讨论**：[SAP Community](https://community.sap.com/)
+- **其他资源**：[AI的ABAP开发中的使用](https://www.ut163.com/the_use_of_ai_in_abap_development/)
+- **其他资源**：[我的SAP学习网站](https://www.ut163.com/)
+
+
+
+
 
 ## 许可证
 
