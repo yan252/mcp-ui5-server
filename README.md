@@ -1,6 +1,7 @@
 # UI5 MCP Server
 
 ## 项目说明
+  能用，但感觉不好用，暂时没细节研究，就这样吧
 
 本项目是基于 [UI5/mcp-server](https://github.com/UI5/mcp-server) 的分支版本，旨在为 SAP UI5/OpenUI5 应用开发提供 MCP (Model Context Protocol) 支持。
 
