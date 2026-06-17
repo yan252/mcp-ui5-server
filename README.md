@@ -6,10 +6,24 @@
 
 原始项目地址：[https://github.com/UI5/mcp-server](https://github.com/UI5/mcp-server)
 
-## 其它SAP中AI的开发使用
-其它SAP中AI的开发使用可参考[AI的ABAP开发中的使用](https://www.ut163.com/the_use_of_ai_in_abap_development/)
+## 其它SAP参考
 
-
+- **其它SAP中AI的开发**：使用可参考[AI的ABAP开发中的使用](https://www.ut163.com/the_use_of_ai_in_abap_development/)
+- **fiori开发MCP**：建议配置fiori-mcp-server与相MCP一起使用，[iori-mcp-server](https://www.ut163.com/)，可以直接在MCP配置中直接增加如下配置来增加fiori-mcp-server的配置：
+```json
+{
+  "mcpServers": {
+    "fiori-mcp-server": {
+      "command": "npx",
+      "args": [
+        "--yes",
+        "@sap-ux/fiori-mcp-server@latest",
+        "fiori-mcp"
+      ]
+    }
+  }
+}
+```
 ## 功能特性
 
 - **创建 UI5 应用**：快速生成新的 UI5 项目
