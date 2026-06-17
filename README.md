@@ -5,21 +5,7 @@
 本项目是基于 [UI5/mcp-server](https://github.com/UI5/mcp-server) 的分支版本，旨在为 SAP UI5/OpenUI5 应用开发提供 MCP (Model Context Protocol) 支持。
 
 原始项目地址：[https://github.com/UI5/mcp-server](https://github.com/UI5/mcp-server)
-此项目也可直接在MCP配置中直接增加如下配置来增加mcp-ui5-server的配置：
-```json
-{
-    "mcpServers": {
-        "@ui5/mcp-server": {
-            "type": "stdio",
-            "command": "npx",
-            "args": [
-                "-y",
-                "@ui5/mcp-server"
-            ]
-        }
-    }
-}
-```
+
 ## 其它SAP参考
 
 - **其它SAP中AI的开发**：使用可参考[AI的ABAP开发中的使用](https://www.ut163.com/the_use_of_ai_in_abap_development/)
@@ -67,7 +53,24 @@
 - **npm**：v8.0.0 或更高版本
 - **MCP 客户端**：如 TRAE IDE、VS Code (GitHub Copilot)、Cline 等
 
-## 安装步骤
+## 安装步骤方法一
+直接使用远程项目，无需安装依赖，
+直接在MCP配置中直接增加如下配置来增加mcp-ui5-server的配置：
+```json
+{
+    "mcpServers": {
+        "@ui5/mcp-server": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+                "-y",
+                "@ui5/mcp-server"
+            ]
+        }
+    }
+}
+```
+## 安装步骤方法二
 
 ### 第一步：从 GitHub 下载项目
 
